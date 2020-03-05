@@ -7,37 +7,52 @@ class Hoge {
  public:
     Hoge() { value = 0; }
 
+    // implicit constructorはよくないらしい．
+    // https://rules.sonarsource.com/cpp
+    explicit Hoge(int value): value(value) {
+        std::cout << "Hoge constructor" << std::endl;
+    }
+
+    ~Hoge() { std::cout << "Hoge is deleted." << std::endl; }
+
     Hoge& operator = (int val) {
         value = val;
         return *this;
     }
 
     void dump() const {
-        std::cout << this->value << std::endl;
+        std::cout << "Hoge.value:" << this->value << std::endl;
     }
 };
 
 
 class Bar {
-    Hoge *obj;
+    Hoge obj;
  public:
-    Bar() { obj = new Hoge(); }
+    Bar() { obj = 0; }
+    ~Bar() { std::cout << "Bar is deleted." << std::endl; }
 
     Hoge& operator() (int value) {
-        return *obj;
+        return obj;
     }
 
     void dump() const {
-        obj->dump();
+        obj.dump();
     }
 };
 
-int main() {
+void do_it() {
     Bar obj;
 
-    obj(1) = 11;　 // Hogeを暗黙のconstructorにしたらどうなるかしら
+    // Hoge a = 1;
+
+    obj(1) = 15;
+    obj(1) = Hoge(-10);
 
     obj.dump();
+}
 
+int main() {
+    do_it();
     return 0;
 }
